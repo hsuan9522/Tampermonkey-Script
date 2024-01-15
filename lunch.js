@@ -4,7 +4,8 @@
 // @version      1.0
 // @description  try to take over the world!
 // @author       You
-// @match        *://*/*
+// @match        /^[^:/#?]*:\/\/([^#?/]*\.)?eats\.quickclick\.cc(:[0-9]{1,5})?\/.*$/
+// @match        /^[^:/#?]*:\/\/([^#?/]*\.)?order\.ocard\.co\/simplycarbs\/order(:[0-9]{1,5})?\/.*$/
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=microsoft.com
 // @grant        none
 // ==/UserScript==
@@ -14,7 +15,6 @@
 
     // Your code here...
     if(location.href.match(/https:\/\/order\.ocard\.co\//g)) {
-        console.log('ocard')
         window.hs = async function() {
             const order_id = location.href.replace('https://order.ocard.co/simplycarbs/order/', '')
 
@@ -32,7 +32,6 @@
                 console.log('err', err)
             })
 
-            console.log(res)
             const ans = res.data.group.orders.reduce((arr,cur) => {
                 const user = cur.name
                 cur.items.forEach(e => {
