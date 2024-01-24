@@ -8,6 +8,7 @@
 // @match        /^[^:/#?]*:\/\/([^#?/]*\.)?order\.ocard\.co\/simplycarbs\/order(:[0-9]{1,5})?\/.*$/
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=microsoft.com
 // @grant        none
+// @updateURL    https://raw.githubusercontent.com/hsuan9522/Tampermonkey-Script/master/lunch.js
 // ==/UserScript==
 
 (function() {
