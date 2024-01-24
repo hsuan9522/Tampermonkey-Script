@@ -32,27 +32,28 @@
                 console.log('err', err)
             })
 
+            let total = Object.create(null);
+
             const ans = res.data.group.orders.reduce((arr,cur) => {
                 const user = cur.name
                 cur.items.forEach(e => {
-                    const name = e.name
+                    const name = e.category_name+'_'+e.name
                     if(!arr[name]) {
                         arr[name] = []
                     }
                     arr[name].push(user)
+
+                    if(total[e.category_name]) {
+                        total[e.category_name]++
+                    } else {
+                        total[e.category_name] = 1
+                    }
                 })
                 return arr
             }, Object.create(null))
 
-            let total = Object.create(null);
-            for(let i in ans) {
-                const name = i
-                const count = ans[i].length
-                if(!total[name]) total[name] = 0
-                total[name] += count
-            }
-            total['@Price'] = res.data.group.total
-            ans['@Total-Ocard'] = total
+            total['0*Price'] = res.data.group.item_subtotal
+            ans['0*Total-Ocard'] = total
             console.log('-----------Ocard-----------')
             console.log(ans)
             console.log('---------------------------')
@@ -87,8 +88,8 @@
                 if(!total[name]) total[name] = 0
                 total[name] += count
             }
-            total['@Price'] = res.orderAmount
-            ans['@Total-作燴'] = total
+            total['0*Price'] = res.orderAmount
+            ans['0*Total-作燴'] = total
             console.log('-----------作燴-----------')
             console.log(ans)
             console.log('--------------------------')
@@ -137,35 +138,10 @@
 
         const price1 = res1.orderAmount
         const price2 = res2.orderAmount
-        total['@Price'] = price1 + price2
-        ans['@Total'] = total
+        total['0*Price'] = price1 + price2
+        ans['0*Total-作燴'] = total
         console.log('-----------作燴-----------')
         console.log(ans)
         console.log('--------------------------')
     }
-    /*
-    window.lunch = (res) => {
-        const ans = res.reduce((arr, cur) => {
-            const name = cur.name.replace(/---(?:.[^\)]*)/g, '')
-            if(!arr[name]) {
-                arr[name] = []
-            }
-
-            arr[name].push(cur.name.match(/---((?:.[^\)]*))/g)[0].replace('---', ''))
-            return arr
-        }, Object.create(null))
-
-        let total = Object.create(null);
-        for(let i in ans) {
-            // console.log(i,x[i])
-            const name = i.replace(/( - .*)/g, '')
-            const count = ans[i].length
-            if(!total[name]) total[name] = 0
-            total[name] += count
-        }
-        ans.Total = total
-        console.log(ans)
-
-    }
-    */
 })();
