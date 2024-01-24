@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lunch
 // @namespace    http://tampermonkey.net/
-// @version      2.0
+// @version      3.0
 // @description  try to take over the world!
 // @author       You
 // @match        /^[^:/#?]*:\/\/([^#?/]*\.)?eats\.quickclick\.cc(:[0-9]{1,5})?\/.*$/
@@ -38,7 +38,14 @@
             const ans = res.data.group.orders.reduce((arr,cur) => {
                 const user = cur.name
                 cur.items.forEach(e => {
-                    const name = e.category_name+'_'+e.name
+                    let name = `${e.category_name}_${e.name}`
+                    if(e.adds.length>=1) {
+                        name += '('
+                        e.adds.forEach(el => {
+                            name += el.name
+                        })
+                        name += ')'
+                    }
                     if(!arr[name]) {
                         arr[name] = []
                     }
