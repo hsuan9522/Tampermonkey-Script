@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lunch
 // @namespace    http://tampermonkey.net/
-// @version      3.0
+// @version      4.0
 // @description  try to take over the world!
 // @author       You
 // @match        /^[^:/#?]*:\/\/([^#?/]*\.)?eats\.quickclick\.cc(:[0-9]{1,5})?\/.*$/
@@ -84,7 +84,10 @@
                     arr[name] = []
                 }
 
-                arr[name].push(cur.name.match(/---((?:.[^\)]*))/g)[0].replace('---', ''))
+                for(let i=0; i<cur.qty; i++) {
+                    arr[name].push(cur.name.match(/---((?:.[^\)]*))/g)[0].replace('---', ''))
+                }
+
                 return arr
             }, Object.create(null))
 
