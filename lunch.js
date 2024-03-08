@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lunch
 // @namespace    http://tampermonkey.net/
-// @version      4.1
+// @version      5.0
 // @description  try to take over the world!
 // @author       You
 // @match        /^[^:/#?]*:\/\/([^#?/]*\.)?eats\.quickclick\.cc(:[0-9]{1,5})?\/.*$/
@@ -111,34 +111,42 @@
         window.hs()
     }
 
-    window.lunch = async (u1, u2) => {
-        // 作燴兩單合併
-        const url1 = u1.replace('line-orders', 'apis/orders')
-        const url2 = u2.replace('line-orders', 'apis/orders')
+    window.lunch = async (urls = []) => {
+        // 作燴多單合併
 
-        const res1 = await fetch(url1)
-            .then(res => {
-                return res.json()
-            })
-            .catch(err => {
-                console.log('err', err)
-            })
-        const res2 = await fetch(url2)
-            .then(res => {
-                return res.json()
-            })
-            .catch(err => {
-                console.log('err', err)
-            })
+        let res = [],
+            price = 0
 
-        const res = res1.products.concat(res2.products)
+        let promise = []
+        urls.forEach(u => {
+            const url = u.replace('line-orders', 'apis/orders')
+            promise.push(
+                fetch(url)
+                    .then(res => res.json())
+                    .catch(err => console.log('err', err))
+            )
+        })
+
+        try {
+            const response = await Promise.all(promise)
+            response.forEach(e => {
+                res = res.concat(e.products)
+                price += e.orderAmount
+            })
+        } catch (err) {
+            console.log('err', err)
+        }
+
         const ans = res.reduce((arr, cur) => {
             const name = cur.name.replace(/---(?:.[^\)]*)/g, '')
             if (!arr[name]) {
                 arr[name] = []
             }
 
-            arr[name].push(cur.name.match(/---((?:.[^\)]*))/g)[0].replace('---', ''))
+            for (let i = 0; i < cur.qty; i++) {
+                arr[name].push(cur.name.match(/---((?:.[^\)]*))/g)[0].replace('---', ''))
+            }
+
             return arr
         }, Object.create(null))
 
@@ -151,10 +159,9 @@
             total[name] += count
         }
 
-        const price1 = res1.orderAmount
-        const price2 = res2.orderAmount
-        total['0*Price'] = price1 + price2
+        total['0*Price'] = price
         ans['0*Total-作燴'] = total
+
         console.log('-----------作燴-----------')
         console.log(ans)
         console.log('--------------------------')
